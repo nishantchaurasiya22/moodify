@@ -9,7 +9,6 @@ class ResponseUser(BaseModel):
     id:int
     user_name:str
     email:EmailStr
-    created_at:datetime
 
 class LoginCreate(BaseModel):
     identifier:str
