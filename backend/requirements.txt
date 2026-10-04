@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic-settings
+psycopg[binary,pool]
+pwdlib[argon2]
+email-validator
+pyjwt
