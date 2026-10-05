@@ -1,7 +1,7 @@
 fastapi
 uvicorn
-pydantic-settings
 psycopg[binary,pool]
+pydantic-settings
 pwdlib[argon2]
-email-validator
+pydantic[email]
 pyjwt

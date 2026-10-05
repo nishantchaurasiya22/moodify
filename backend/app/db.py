@@ -4,13 +4,13 @@ from app.config import settings
 connection_pool=ConnectionPool(
     min_size=1,
     max_size=20,
-    kwargs={
-        "port":settings.DB_PORT,
+    kwargs=({
         "dbname":settings.DB_NAME,
+        "port":settings.DB_PORT,
         "password":settings.DB_PASSWORD,
         "user":settings.DB_USER,
         "host":settings.DB_HOST
-    }
+    })
 )
 
 def get_connection():
@@ -18,3 +18,4 @@ def get_connection():
 
 def release_connection(conn):
     return connection_pool.putconn(conn)
+
