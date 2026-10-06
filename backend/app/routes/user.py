@@ -1,25 +1,24 @@
-from fastapi import APIRouter,status,HTTPException,Response,Depends
-import psycopg.errors
-from app.dtos.user import ResponseUser,CreateLogin,CreateUser
+from fastapi import APIRouter,status,HTTPException,Depends,Response,Request
+import psycopg
 from app.services.user_service import register_service,login_service,get_me_service
+from app.dtos.user import CreateUser,ResponseUser,LoginUser
 from app.dependencies import get_current_user
 auth_router=APIRouter(prefix="/auth",tags=["auth"])
 
 @auth_router.post("/register",response_model=ResponseUser,status_code=status.HTTP_201_CREATED)
 def register(user:CreateUser):
     try:
-        user=register_service(user_name=user.user_name,email=user.email.lower(),password=user.password)
-        return user
+        return register_service(user.user_name.strip().lower(),user.email.lower(),user.password)
     except psycopg.errors.UniqueViolation:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="user already exist")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="User already exist")
 
 @auth_router.post("/login",response_model=ResponseUser,status_code=status.HTTP_200_OK)
-def login(user:CreateLogin,response:Response):
+def login(user:LoginUser,response:Response):
     try:
-        access_token,user_data=login_service(user.identifier,user.password)
+        to_encode,user_data=login_service(user.identifier.strip().lower(),user.password)
         response.set_cookie(
             key="access_token",
-            value=access_token,
+            value=to_encode,
             samesite="lax",
             httponly=True,
             secure=False
@@ -36,7 +35,11 @@ def get_me(current_user:dict=Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="User not found")
     return user
+
+@auth_router.post("/logout",response_model=None,status_code=status.HTTP_204_NO_CONTENT)
+def logout(request:Request):
+    request.cookies.clear("access_token")
+
         
-    
 
     

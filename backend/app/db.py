@@ -1,5 +1,6 @@
 from psycopg_pool import ConnectionPool
 from app.config import settings
+from psycopg.rows import dict_row
 
 connection_pool=ConnectionPool(
     min_size=1,
@@ -18,4 +19,3 @@ def get_connection():
 
 def release_connection(conn):
     return connection_pool.putconn(conn)
-
