@@ -1,10 +1,10 @@
-from psycopg_pool import ConnectionPool
+from psycopg_pool import AsyncConnectionPool
 from app.config import settings
-from psycopg.rows import dict_row
 
-connection_pool=ConnectionPool(
+connection_pool=AsyncConnectionPool(
     min_size=1,
     max_size=20,
+    open=False,
     kwargs=({
         "dbname":settings.DB_NAME,
         "port":settings.DB_PORT,
@@ -14,8 +14,8 @@ connection_pool=ConnectionPool(
     })
 )
 
-def get_connection():
-    return connection_pool.getconn()
+async def get_connection():
+    return await connection_pool.getconn()
 
-def release_connection(conn):
-    return connection_pool.putconn(conn)
+async def release_connection(conn):
+    return await connection_pool.putconn(conn)

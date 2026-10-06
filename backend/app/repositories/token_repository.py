@@ -2,11 +2,11 @@ from app.db import get_connection,release_connection
 from datetime import datetime
 from psycopg.rows import dict_row
 
-def blacklist_token(jti:str,expires_at:datetime)->dict:
-    conn=get_connection()
+async def blacklist_token(jti:str,expires_at:datetime)->dict:
+    conn=await get_connection()
     cur=conn.cursor(row_factory=dict_row)
     try:
-        cur.execute(
+        await cur.execute(
             """
             INSERT INTO blacklisted_tokens(jti,expires_at)
             VALUES(%s,%s)
@@ -14,29 +14,29 @@ def blacklist_token(jti:str,expires_at:datetime)->dict:
             """,
             (jti,expires_at)
         )
-        blacklisted_token=cur.fetchone()
-        conn.commit()
+        blacklisted_token=await cur.fetchone()
+        await conn.commit()
         return blacklisted_token
     except Exception:
-        conn.rollback()
+        await conn.rollback()
         raise
     finally:
-        cur.close()
-        release_connection(conn)
+        await cur.close()
+        await release_connection(conn)
 
-def get_blacklisted_token(jti:str)->dict:
-    conn=get_connection()
+async def get_blacklisted_token(jti:str)->dict:
+    conn=await get_connection()
     cur=conn.cursor(row_factory=dict_row)
     try:
-        cur.execute(
+        await cur.execute(
             """
              SELECT jti,expires_at FROM blacklisted_tokens
              WHERE jti=%s
             """,
             (jti,)
         )
-        blacklisted_token=cur.fetchone()
+        blacklisted_token=await cur.fetchone()
         return blacklisted_token
     finally:
-        cur.close()
-        release_connection(conn)
+        await cur.close()
+        await release_connection(conn)

@@ -6,16 +6,16 @@ from app.dependencies import get_current_user
 auth_router=APIRouter(prefix="/auth",tags=["auth"])
 
 @auth_router.post("/register",response_model=ResponseUser,status_code=status.HTTP_201_CREATED)
-def register(user:CreateUser):
+async def register(user:CreateUser):
     try:
-        return register_service(user.user_name.strip().lower(),user.email.lower(),user.password)
+        return await register_service(user.user_name.strip().lower(),user.email.lower(),user.password)
     except psycopg.errors.UniqueViolation:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="User already exist")
 
 @auth_router.post("/login",response_model=ResponseUser,status_code=status.HTTP_200_OK)
-def login(user:LoginUser,response:Response):
+async def login(user:LoginUser,response:Response):
     try:
-        to_encode,user_data=login_service(user.identifier.strip().lower(),user.password)
+        to_encode,user_data=await login_service(user.identifier.strip().lower(),user.password)
         response.set_cookie(
             key="access_token",
             value=to_encode,
@@ -29,17 +29,13 @@ def login(user:LoginUser,response:Response):
 
 
 @auth_router.get("/me",response_model=ResponseUser,status_code=status.HTTP_200_OK)
-def get_me(current_user:dict=Depends(get_current_user)):
+async def get_me(current_user:dict=Depends(get_current_user)):
     user_id=int(current_user.get("sub"))
-    user=get_me_service(user_id)
+    user=await get_me_service(user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="User not found")
     return user
 
-@auth_router.post("/logout",response_model=None,status_code=status.HTTP_204_NO_CONTENT)
-def logout(request:Request):
-    request.cookies.clear("access_token")
 
-        
 
     
