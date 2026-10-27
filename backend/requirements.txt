@@ -1,7 +1,10 @@
 fastapi
+uvicorn[standard]
 psycopg[binary,pool]
-uvicorn
 pydantic-settings
-pyjwt
 pwdlib[argon2]
+pyjwt
 pydantic[email]
+
+
+

@@ -6,11 +6,11 @@ connection_pool=AsyncConnectionPool(
     max_size=20,
     open=False,
     kwargs=({
-        "dbname":settings.DB_NAME,
-        "port":settings.DB_PORT,
-        "password":settings.DB_PASSWORD,
-        "user":settings.DB_USER,
-        "host":settings.DB_HOST
+       "dbname":settings.DB_NAME,
+       "port":settings.DB_PORT,
+       "password":settings.DB_PASSWORD,
+       "user":settings.DB_USER,
+       "host":settings.DB_HOST
     })
 )
 
@@ -19,3 +19,4 @@ async def get_connection():
 
 async def release_connection(conn):
     return await connection_pool.putconn(conn)
+
